@@ -1,0 +1,23 @@
+.SidePanel {
+	height: 100%;
+	overflow-y: auto;
+	background-color: #191c20;
+	min-width: 400px;
+}
+
+.TabsList {
+	background-color: #1a202a;
+}
+
+.TabsTrigger {
+	border-radius: 0;
+	background-color: #0a0d11;
+}
+
+.TabsTrigger:focus {
+	outline: none !important;
+}
+
+.TabsTrigger[data-state="active"] {
+	background-color: #191c20;
+}

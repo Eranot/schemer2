@@ -1,0 +1,44 @@
+.table-container {
+	border-radius: 4px;
+	background-color: #eeeeee;
+}
+
+.table-header {
+	background-color: #5370a2;
+	color: white;
+	font-size: 16pt;
+	padding: 8px 16px;
+	border-radius: 4px 4px 0 0;
+}
+
+.column-container {
+	margin: 0;
+	padding: 4px 16px;
+	display: flex;
+	flex-direction: row;
+	gap: 12px;
+	position: relative;
+	background-color: #eeeeee;
+}
+
+.column-container:hover {
+	background-color: #dbdbdb;
+}
+
+.column-name {
+	flex-grow: 1;
+	color: #424141;
+	white-space: nowrap;
+	overflow: hidden;
+	font-size: 15pt;
+}
+
+.column-type {
+	flex-shrink: 1;
+	color: #767676;
+	font-size: 14pt;
+}
+
+.primary_key {
+	font-weight: 700;
+}

@@ -1,0 +1,133 @@
+input,
+textarea,
+button {
+	all: unset;
+	box-sizing: border-box;
+}
+
+.TabContainer {
+	padding: 8px 16px;
+	overflow-y: auto;
+	height: 100%;
+	flex-grow: 1;
+	position: relative;
+}
+
+.ColumnsTitleContainer {
+	display: flex;
+	flex-direction: row;
+	gap: 8px;
+	align-items: center;
+	font-size: 22px;
+	margin-top: 16px;
+	color: #afceff;
+}
+
+.ColumnContainer {
+	display: flex;
+	flex-direction: row;
+	gap: 6px;
+}
+
+.FormField {
+	display: grid;
+	margin-bottom: 7px;
+}
+
+.Expandable {
+	flex-grow: 1;
+}
+
+.FormLabel {
+	font-size: 16px;
+	font-weight: 400;
+	line-height: 28px;
+	color: #8996a3;
+	margin-bottom: 0px;
+}
+
+.Input {
+	width: 100%;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 4px;
+	font-size: 16px;
+	color: white;
+	background-color: #2e3949;
+	padding: 0 10px;
+	height: 40px;
+	line-height: 1;
+}
+
+.Input:hover {
+	box-shadow: 0 0 0 1px white;
+}
+
+.Input:focus {
+	box-shadow: 0 0 0 2px white;
+}
+
+.Input::selection {
+	background-color: var(--black-a9);
+	color: white;
+}
+
+.Select {
+	width: 100px;
+	border: none;
+}
+
+.CheckboxRoot {
+	background-color: #2e3949;
+	width: 40px;
+	height: 40px;
+	border-radius: 4px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.CheckboxRoot:hover {
+	background-color: #48566b;
+}
+
+.CheckboxRoot:focus {
+	box-shadow: 0 0 0 2px black;
+}
+
+.CheckboxIndicator {
+	color: white;
+}
+
+.CheckIcon {
+	margin-top: 6px;
+	height: 28px;
+	width: 28px;
+}
+
+.Label {
+	color: white;
+	padding-left: 15px;
+	font-size: 15px;
+	line-height: 1;
+}
+
+.Button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 4px;
+	padding: 2px;
+	line-height: 1;
+	font-weight: 500;
+	height: 30px;
+	width: 30px;
+	background-color: transparent;
+	color: #afceff;
+	margin: 0;
+}
+
+.Button:hover {
+	background-color: rgba(255, 255, 255, 0.1);
+}
