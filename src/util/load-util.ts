@@ -10,20 +10,24 @@ export function loadERFromJSON(er: any) {
 
 	const initialEdges = er.tables
 		.map((table: any) => {
-			return table.constraints.map((constraint: any) => {
-				return {
-					id: constraint.id.toString(),
-					source: table.id.toString(),
-					sourceHandle:
-						constraint.relationships[0].own_column_id.toString() +
-						"_source",
-					target: constraint.target_table_id.toString(),
-					targetHandle:
-						constraint.relationships[0].target_column_id.toString() +
-						"_target",
-					type: "floating",
-				};
-			});
+			return table.constraints
+				.map((constraint: any) => {
+					return constraint.relationships.map(
+						(relationship: any, index: number) => ({
+							id: constraint.id.toString() + "_" + index,
+							source: table.id.toString(),
+							sourceHandle:
+								relationship.own_column_id.toString() +
+								"_source",
+							target: constraint.target_table_id.toString(),
+							targetHandle:
+								relationship.target_column_id.toString() +
+								"_target",
+							type: "floating",
+						}),
+					);
+				})
+				.flat();
 		})
 		.flat();
 
@@ -41,25 +45,7 @@ export function crateJsonByER(nodes: any, edges: any) {
 			position: node.position,
 			size: node.size,
 			columns: node.data.columns,
-			constraints: edges
-				.filter((edge: any) => edge.source === node.id)
-				.map((edge: any) => {
-					return {
-						id: parseInt(edge.id),
-						relationships: [
-							{
-								own_column_id: parseInt(
-									edge.sourceHandle.split("_")[0],
-								),
-								target_column_id: parseInt(
-									edge.targetHandle.split("_")[0],
-								),
-							},
-						],
-						target_table_id: parseInt(edge.target),
-						type: 0,
-					};
-				}),
+			constraints: node.data.constraints,
 		};
 	});
 

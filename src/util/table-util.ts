@@ -5,6 +5,7 @@ export function getNewId(): string {
 export function getDefaultColumns(): any[] {
 	return [
 		{
+			id: getNewId(),
 			name: "id",
 			type: "int",
 			is_primary_key: true,

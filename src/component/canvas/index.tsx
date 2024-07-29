@@ -90,6 +90,7 @@ export default function Canvas({
 			data: {
 				name: "new_table",
 				columns: getDefaultColumns(),
+				constraints: [],
 			},
 		};
 		setNodes((nds: any[]) => {
