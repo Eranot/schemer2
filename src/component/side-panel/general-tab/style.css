@@ -131,3 +131,58 @@ button {
 .Button:hover {
 	background-color: rgba(255, 255, 255, 0.1);
 }
+
+.IconButton {
+	font-family: inherit;
+	border-radius: 4px;
+	height: 40px;
+	width: 20px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background-color: #2e3949;
+	padding: 4px 0;
+}
+
+.IconButton:hover {
+	background-color: #48566b;
+}
+
+.IconButton:focus {
+	box-shadow: 0 0 0 2px black;
+}
+
+.DotsIcon {
+	height: 40px;
+	width: 40px;
+	color: white;
+}
+
+.DropdownMenuContent {
+	min-width: 100px;
+	background-color: #2e3949;
+	border: #48566b 2px solid;
+	border-radius: 6px;
+	box-shadow: 0px 10px 38px -10px rgba(22, 23, 24, 0.35),
+		0px 10px 20px -15px rgba(22, 23, 24, 0.2);
+	animation-duration: 400ms;
+	animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+	will-change: transform, opacity;
+}
+
+.DropdownMenuItem {
+	font-size: 16px;
+	line-height: 1;
+	color: white;
+	border-radius: 3px;
+	display: flex;
+	align-items: center;
+	padding: 12px 12px;
+	position: relative;
+	user-select: none;
+	outline: none;
+}
+
+.DropdownMenuItem:hover {
+	background-color: #48566b;
+}

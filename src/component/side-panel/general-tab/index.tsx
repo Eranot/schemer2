@@ -1,10 +1,11 @@
 import * as Form from "@radix-ui/react-form";
 import * as Checkbox from "@radix-ui/react-checkbox";
-import { CheckIcon, PlusIcon } from "@radix-ui/react-icons";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { CheckIcon, PlusIcon, DotsVerticalIcon } from "@radix-ui/react-icons";
 
 import { useReactFlow } from "@xyflow/react";
 import { useEffect, useState } from "react";
-import { getNewId } from "../../../util/table-util";
+import { getNewId, removeColumn, removeTable } from "../../../util/table-util";
 
 import "./style.css";
 
@@ -45,15 +46,51 @@ const GeneralTab = ({ selectedTable }: any) => {
 	return (
 		<div className="TabContainer">
 			<Form.Root onSubmit={(e) => e.preventDefault()}>
-				<div className="FormField">
-					<label className="FormLabel">Name</label>
-					<input
-						className="Input"
-						value={name}
-						onChange={handleChange}
-						required
-					/>
+				<div className="TabTitle">
+					<div className="FormField NameField">
+						<label className="FormLabel">Name</label>
+						<input
+							className="Input"
+							value={name}
+							onChange={handleChange}
+							required
+						/>
+					</div>
+
+					<div className="TableVerticalDos">
+						<DropdownMenu.Root>
+							<DropdownMenu.Trigger asChild>
+								<button
+									className="IconButton"
+									aria-label="Options"
+								>
+									<DotsVerticalIcon className="DotsIcon" />
+								</button>
+							</DropdownMenu.Trigger>
+
+							<DropdownMenu.Portal>
+								<DropdownMenu.Content
+									className="DropdownMenuContent"
+									sideOffset={5}
+									align="end"
+								>
+									<DropdownMenu.Item
+										className="DropdownMenuItem"
+										onClick={() =>
+											removeTable(
+												selectedTable.id.toString(),
+												reactFlow,
+											)
+										}
+									>
+										Remove table
+									</DropdownMenu.Item>
+								</DropdownMenu.Content>
+							</DropdownMenu.Portal>
+						</DropdownMenu.Root>
+					</div>
 				</div>
+
 				<div className="ColumnsTitleContainer">
 					<div style={{ flexGrow: 1 }}>Columns</div>
 					<button className="Button" onClick={createNewColumn}>
@@ -207,6 +244,40 @@ const Column = ({ selectedTable, column, showLabels }: any) => {
 						<CheckIcon className="CheckIcon" />
 					</Checkbox.Indicator>
 				</Checkbox.Root>
+			</div>
+
+			<div className="FormField">
+				{showLabels && (
+					<label className="FormLabel">&nbsp;&nbsp;</label>
+				)}
+				<DropdownMenu.Root>
+					<DropdownMenu.Trigger asChild>
+						<button className="IconButton" aria-label="Options">
+							<DotsVerticalIcon className="DotsIcon" />
+						</button>
+					</DropdownMenu.Trigger>
+
+					<DropdownMenu.Portal>
+						<DropdownMenu.Content
+							className="DropdownMenuContent"
+							sideOffset={5}
+							align="end"
+						>
+							<DropdownMenu.Item
+								className="DropdownMenuItem"
+								onClick={() =>
+									removeColumn(
+										selectedTable,
+										column.id,
+										reactFlow,
+									)
+								}
+							>
+								Remove
+							</DropdownMenu.Item>
+						</DropdownMenu.Content>
+					</DropdownMenu.Portal>
+				</DropdownMenu.Root>
 			</div>
 		</div>
 	);
