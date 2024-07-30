@@ -1,13 +1,11 @@
 import * as Toolbar from "@radix-ui/react-toolbar";
-import {
-	TableIcon,
-	CursorArrowIcon,
-	ArrowUpIcon,
-	DoubleArrowUpIcon,
-} from "@radix-ui/react-icons";
-import "./styles.css";
+import createTableIcon from "../../assets/create_table_icon_normal.png";
+import oneToManyIcon from "../../assets/one_to_many_icon_normal.png";
+import manyToManyIcon from "../../assets/many_to_many_icon_normal.png";
+import cursorIcon from "../../assets/cursor_icon_normal.png";
 import { useToolbar } from "../../context/toolbar-context";
 import ToolEnum from "../../enum/tool-enum";
+import "./styles.css";
 
 const ToolbarDemo = () => {
 	const { currentTool, setCurrentTool } = useToolbar();
@@ -33,7 +31,7 @@ const ToolbarDemo = () => {
 						setCurrentTool(ToolEnum.SELECT);
 					}}
 				>
-					<CursorArrowIcon />
+					<img src={cursorIcon} />
 				</Toolbar.ToggleItem>
 
 				<Toolbar.ToggleItem
@@ -44,7 +42,7 @@ const ToolbarDemo = () => {
 						setCurrentTool(ToolEnum.CREATE_TABLE);
 					}}
 				>
-					<TableIcon />
+					<img src={createTableIcon} />
 				</Toolbar.ToggleItem>
 
 				<Toolbar.ToggleItem
@@ -55,7 +53,7 @@ const ToolbarDemo = () => {
 						setCurrentTool(ToolEnum.ONE_TO_MANY);
 					}}
 				>
-					<ArrowUpIcon />
+					<img src={oneToManyIcon} />
 				</Toolbar.ToggleItem>
 
 				<Toolbar.ToggleItem
@@ -66,7 +64,7 @@ const ToolbarDemo = () => {
 						setCurrentTool(ToolEnum.MANY_TO_MANY);
 					}}
 				>
-					<DoubleArrowUpIcon />
+					<img src={manyToManyIcon} />
 				</Toolbar.ToggleItem>
 			</Toolbar.ToggleGroup>
 		</Toolbar.Root>

@@ -1,7 +1,8 @@
 import { Handle, Position, useUpdateNodeInternals } from "@xyflow/react";
-
-import "./style.css";
 import { useMemo } from "react";
+import columnDiamondEmpty from "../../assets/column_diamond_empty.png";
+import columnDiamondFull from "../../assets/column_diamond_full.png";
+import "./style.css";
 
 const handleStyle = {
 	background: "transparent",
@@ -25,6 +26,15 @@ function TableNode({ id, data }: any) {
 
 			{columns.map((column: any) => (
 				<div key={column.id} className="column-container">
+					<img
+						className="column-icon"
+						src={
+							column.is_primary_key || column.is_not_null
+								? columnDiamondFull
+								: columnDiamondEmpty
+						}
+						alt="column-icon"
+					/>
 					<div
 						className={
 							"column-name " +

@@ -16,7 +16,7 @@
 	padding: 4px 16px;
 	display: flex;
 	flex-direction: row;
-	gap: 12px;
+	gap: 10px;
 	position: relative;
 	background-color: #eeeeee;
 }
@@ -31,6 +31,13 @@
 	white-space: nowrap;
 	overflow: hidden;
 	font-size: 15pt;
+}
+
+.column-icon {
+	height: 18px;
+	width: 18px;
+	margin-top: 2px;
+	align-self: center;
 }
 
 .column-type {

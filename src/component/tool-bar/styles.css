@@ -17,12 +17,11 @@ button {
 	flex-direction: column;
 }
 
-.ToolbarToggleItem,
-.ToolbarLink,
-.ToolbarButton {
+.ToolbarToggleItem {
 	flex: 0 0 auto;
-	color: var(--mauve-11);
-	height: 25px;
+	background-color: transparent;
+	height: 42px;
+	width: 42px;
 	padding: 0 5px;
 	border-radius: 4px;
 	display: inline-flex;
@@ -38,30 +37,17 @@ button {
 	gap: 8px;
 }
 
-.ToolbarToggleItem:hover,
-.ToolbarLink:hover,
-.ToolbarButton:hover {
-	background-color: var(--violet-3);
-	color: var(--violet-11);
+.ToolbarToggleItem:hover {
+	background-color: #474c54;
 }
 
-.ToolbarToggleItem:focus,
-.ToolbarLink:focus,
-.ToolbarButton:focus {
+.ToolbarToggleItem:focus {
 	position: relative;
 	box-shadow: 0 0 0 2px var(--violet-7);
 }
 
-.ToolbarToggleItem {
-	background-color: white;
-	margin-left: 2px;
-}
-.ToolbarToggleItem:first-child {
-	margin-left: 0;
-}
 .ToolbarToggleItem[data-state="on"] {
-	background-color: var(--violet-5);
-	color: var(--violet-11);
+	background-color: #54647e;
 }
 
 .ToolbarSeparator {
