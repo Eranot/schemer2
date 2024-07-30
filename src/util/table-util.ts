@@ -48,6 +48,28 @@ export function removeColumn(
 	}
 }
 
+export function moveColumn(
+	originTable: any,
+	columnId: number,
+	offset: number,
+	reacflow: ReactFlowInstance,
+) {
+	const updatedColumns = [...originTable.columns];
+	const index = updatedColumns.findIndex(
+		(column: any) => column.id === columnId,
+	);
+	const newIndex = index + offset;
+	if (newIndex < 0 || newIndex >= updatedColumns.length) {
+		return;
+	}
+	[updatedColumns[index], updatedColumns[newIndex]] = [
+		updatedColumns[newIndex],
+		updatedColumns[index],
+	];
+	originTable.columns = updatedColumns;
+	reacflow.updateNode(originTable.id, { data: originTable });
+}
+
 export function removeTable(tableId: string, reactflow: ReactFlowInstance) {
 	const tableNode: any = reactflow.getNode(tableId);
 	reactflow.deleteElements({

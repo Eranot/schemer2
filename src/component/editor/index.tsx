@@ -1,5 +1,10 @@
-import { useCallback, useState } from "react";
-import { addEdge, applyNodeChanges, applyEdgeChanges } from "@xyflow/react";
+import { useCallback, useEffect } from "react";
+import {
+	addEdge,
+	applyNodeChanges,
+	applyEdgeChanges,
+	Node,
+} from "@xyflow/react";
 
 import "@xyflow/react/dist/style.css";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
@@ -9,6 +14,7 @@ import MenuBar from "../menu-bar";
 import ToolbarDemo from "../tool-bar";
 import Canvas from "../canvas";
 import SidePanel from "../side-panel";
+import { useEditor } from "../../context/editor-context";
 
 const er = {
 	tables: [
@@ -346,21 +352,27 @@ const er = {
 const { initialNodes, initialEdges } = loadERFromJSON(er);
 
 export default function Editor() {
-	const [nodes, setNodes] = useState(initialNodes);
-	const [edges, setEdges] = useState(initialEdges);
+	const { nodes, setNodes, edges, setEdges } = useEditor();
 
 	const { selectedTable } = useTable();
 
+	useEffect(() => {
+		setNodes(initialNodes);
+		setEdges(initialEdges);
+	}, []);
+
 	const onNodesChange = useCallback(
 		(changes: any) =>
-			setNodes((nds: any) => applyNodeChanges(changes, nds)),
+			setNodes((nds: Node[]) => applyNodeChanges(changes, nds)),
 		[setNodes],
 	);
+
 	const onEdgesChange = useCallback(
 		(changes: any) =>
 			setEdges((eds: any) => applyEdgeChanges(changes, eds)),
 		[setEdges],
 	);
+
 	const onConnect = useCallback(
 		(params: any) =>
 			(setEdges as any)((eds: any[]) =>

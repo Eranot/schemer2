@@ -1,18 +1,21 @@
-import { Handle, Position } from "@xyflow/react";
+import { Handle, Position, useUpdateNodeInternals } from "@xyflow/react";
 
 import "./style.css";
+import { useMemo } from "react";
 
 const handleStyle = {
-	// make it invisible
 	background: "transparent",
 	border: "none",
 	borderWidth: 0,
 };
 
-function TableNode({ data }: any) {
-	// const onChange = useCallback((evt: any) => {
-	// 	console.log(evt.target.value);
-	// }, []);
+function TableNode({ id, data }: any) {
+	const updateNodeInternals = useUpdateNodeInternals();
+
+	const columns = useMemo(() => {
+		updateNodeInternals(id);
+		return data.columns;
+	}, [data.columns]);
 
 	return (
 		<div className="table-container">
@@ -20,7 +23,7 @@ function TableNode({ data }: any) {
 				<div className="table-name">{data.name}</div>
 			</div>
 
-			{data.columns.map((column: any) => (
+			{columns.map((column: any) => (
 				<div key={column.id} className="column-container">
 					<div
 						className={
@@ -33,6 +36,7 @@ function TableNode({ data }: any) {
 					<div className="column-type">{column.type}</div>
 
 					<Handle
+						key={column.id + "_target"}
 						type="target"
 						position={Position.Left}
 						id={column.id + "_target"}
@@ -41,6 +45,7 @@ function TableNode({ data }: any) {
 					/>
 
 					<Handle
+						key={column.id + "_target"}
 						type="target"
 						position={Position.Right}
 						id={column.id + "_target"}
@@ -49,6 +54,7 @@ function TableNode({ data }: any) {
 					/>
 
 					<Handle
+						key={column.id + "_source"}
 						type="source"
 						position={Position.Left}
 						id={column.id + "_source"}
@@ -57,6 +63,7 @@ function TableNode({ data }: any) {
 					/>
 
 					<Handle
+						key={column.id + "_source"}
 						type="source"
 						position={Position.Right}
 						id={column.id + "_source"}

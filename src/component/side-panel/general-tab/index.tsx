@@ -3,9 +3,14 @@ import * as Checkbox from "@radix-ui/react-checkbox";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { CheckIcon, PlusIcon, DotsVerticalIcon } from "@radix-ui/react-icons";
 
-import { useReactFlow } from "@xyflow/react";
+import { ReactFlowInstance, useReactFlow } from "@xyflow/react";
 import { useEffect, useState } from "react";
-import { getNewId, removeColumn, removeTable } from "../../../util/table-util";
+import {
+	getNewId,
+	moveColumn,
+	removeColumn,
+	removeTable,
+} from "../../../util/table-util";
 
 import "./style.css";
 import { useTable } from "../../../context/table-context";
@@ -116,7 +121,7 @@ const GeneralTab = () => {
 };
 
 const Column = ({ selectedTable, column, setColumns, showLabels }: any) => {
-	const reactFlow = useReactFlow();
+	const reactFlow: ReactFlowInstance = useReactFlow();
 
 	const [name, setName] = useState(column?.name || "");
 	const [type, setType] = useState(column?.type || "");
@@ -180,6 +185,24 @@ const Column = ({ selectedTable, column, setColumns, showLabels }: any) => {
 		setColumns(selectedTable.columns);
 	};
 
+	const onMoveUpColumn = (
+		selectedTable: any,
+		columnId: number,
+		reactFlow: any,
+	) => {
+		moveColumn(selectedTable, columnId, -1, reactFlow);
+		setColumns(selectedTable.columns);
+	};
+
+	const onMoveDownColumn = (
+		selectedTable: any,
+		columnId: number,
+		reactFlow: any,
+	) => {
+		moveColumn(selectedTable, columnId, 1, reactFlow);
+		setColumns(selectedTable.columns);
+	};
+
 	return (
 		<div className="ColumnContainer" key={column.id}>
 			<div className="FormField Expandable">
@@ -189,6 +212,22 @@ const Column = ({ selectedTable, column, setColumns, showLabels }: any) => {
 					onChange={handleChangeName}
 					className="Input"
 					required
+					onKeyDown={(e) => {
+						if (e.key === "ArrowUp" && e.ctrlKey) {
+							e.stopPropagation();
+							onMoveUpColumn(selectedTable, column.id, reactFlow);
+						} else if (e.key === "ArrowDown" && e.ctrlKey) {
+							e.stopPropagation();
+							onMoveDownColumn(
+								selectedTable,
+								column.id,
+								reactFlow,
+							);
+						} else if (e.key === "Delete" && e.ctrlKey) {
+							e.stopPropagation();
+							onRemoveColumn(selectedTable, column.id, reactFlow);
+						}
+					}}
 				/>
 			</div>
 			<div className="FormField">
@@ -287,6 +326,30 @@ const Column = ({ selectedTable, column, setColumns, showLabels }: any) => {
 								}
 							>
 								Remove
+							</DropdownMenu.Item>
+							<DropdownMenu.Item
+								className="DropdownMenuItem"
+								onClick={() =>
+									onMoveUpColumn(
+										selectedTable,
+										column.id,
+										reactFlow,
+									)
+								}
+							>
+								Move up
+							</DropdownMenu.Item>
+							<DropdownMenu.Item
+								className="DropdownMenuItem"
+								onClick={() =>
+									onMoveDownColumn(
+										selectedTable,
+										column.id,
+										reactFlow,
+									)
+								}
+							>
+								Move down
 							</DropdownMenu.Item>
 						</DropdownMenu.Content>
 					</DropdownMenu.Portal>
