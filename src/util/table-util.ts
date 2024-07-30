@@ -36,7 +36,7 @@ export function removeColumn(
 				constraint.target_table_id === originTable.id
 			) {
 				table.constraints = table.constraints.filter((c: any) => {
-					return !c.relationships.any(
+					return !c.relationships.some(
 						(r: any) =>
 							r.own_column_id !== columnId ||
 							r.target_column_id !== columnId,

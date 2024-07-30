@@ -8,8 +8,11 @@ import { useEffect, useState } from "react";
 import { getNewId, removeColumn, removeTable } from "../../../util/table-util";
 
 import "./style.css";
+import { useTable } from "../../../context/table-context";
 
-const GeneralTab = ({ selectedTable }: any) => {
+const GeneralTab = () => {
+	const { selectedTable } = useTable();
+
 	const reactFlow = useReactFlow();
 	const [name, setName] = useState(selectedTable?.name || "");
 	const [columns, setColumns] = useState(selectedTable?.columns || "");
@@ -103,6 +106,7 @@ const GeneralTab = ({ selectedTable }: any) => {
 							key={column.id}
 							selectedTable={selectedTable}
 							column={column}
+							setColumns={setColumns}
 							showLabels={index === 0}
 						/>
 					))}
@@ -111,7 +115,7 @@ const GeneralTab = ({ selectedTable }: any) => {
 	);
 };
 
-const Column = ({ selectedTable, column, showLabels }: any) => {
+const Column = ({ selectedTable, column, setColumns, showLabels }: any) => {
 	const reactFlow = useReactFlow();
 
 	const [name, setName] = useState(column?.name || "");
@@ -165,6 +169,15 @@ const Column = ({ selectedTable, column, showLabels }: any) => {
 		setIsAutoIncrement(updatedValue);
 		column.is_auto_increment = updatedValue;
 		reactFlow.updateNode(selectedTable.id, { data: selectedTable });
+	};
+
+	const onRemoveColumn = (
+		selectedTable: any,
+		columnId: number,
+		reactFlow: any,
+	) => {
+		removeColumn(selectedTable, columnId, reactFlow);
+		setColumns(selectedTable.columns);
 	};
 
 	return (
@@ -266,7 +279,7 @@ const Column = ({ selectedTable, column, showLabels }: any) => {
 							<DropdownMenu.Item
 								className="DropdownMenuItem"
 								onClick={() =>
-									removeColumn(
+									onRemoveColumn(
 										selectedTable,
 										column.id,
 										reactFlow,

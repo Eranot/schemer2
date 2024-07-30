@@ -62,7 +62,8 @@ export default function MenuBar() {
 			reactFlow.getNodes(),
 			reactFlow.getEdges(),
 		);
-		const blob = new Blob([JSON.stringify(fileJson)], {
+		const json = JSON.stringify(fileJson, null, 4);
+		const blob = new Blob([json], {
 			type: "application/json",
 		});
 		saveAs(blob, originalFileName || "er.schemer");

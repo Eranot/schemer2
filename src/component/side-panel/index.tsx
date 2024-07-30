@@ -6,7 +6,7 @@ import GeneralTab from "./general-tab";
 import "./style.css";
 
 const SidePanel = () => {
-	const { selectedTable, setSelectedTable } = useTable();
+	const { setSelectedTable } = useTable();
 
 	useEffect(() => {
 		const handleEsc = (event: KeyboardEvent) => {
@@ -33,7 +33,7 @@ const SidePanel = () => {
 					</Tabs.Trigger>
 				</Tabs.List>
 				<Tabs.Content value="general">
-					<GeneralTab selectedTable={selectedTable} />
+					<GeneralTab />
 				</Tabs.Content>
 				<Tabs.Content value="foreign_keys">
 					Tab two content
