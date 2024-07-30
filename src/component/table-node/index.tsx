@@ -46,7 +46,6 @@ function TableNode({ id, data }: any) {
 					<div className="column-type">{column.type}</div>
 
 					<Handle
-						key={column.id + "_target"}
 						type="target"
 						position={Position.Left}
 						id={column.id + "_target"}
@@ -55,7 +54,6 @@ function TableNode({ id, data }: any) {
 					/>
 
 					<Handle
-						key={column.id + "_target"}
 						type="target"
 						position={Position.Right}
 						id={column.id + "_target"}
@@ -64,7 +62,6 @@ function TableNode({ id, data }: any) {
 					/>
 
 					<Handle
-						key={column.id + "_source"}
 						type="source"
 						position={Position.Left}
 						id={column.id + "_source"}
@@ -73,7 +70,6 @@ function TableNode({ id, data }: any) {
 					/>
 
 					<Handle
-						key={column.id + "_source"}
 						type="source"
 						position={Position.Right}
 						id={column.id + "_source"}

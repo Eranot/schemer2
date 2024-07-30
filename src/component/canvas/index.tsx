@@ -1,13 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
 	ReactFlow,
 	Background,
 	BackgroundVariant,
 	useReactFlow,
 } from "@xyflow/react";
-import createTableIcon from "../../assets/create_table_icon_normal.png";
-import oneToManyIcon from "../../assets/one_to_many_icon_normal.png";
-import manyToManyIcon from "../../assets/many_to_many_icon_normal.png";
 import TableNode from "../table-node";
 import SimpleFloatingEdge from "../simple-floating-edge";
 import { getDefaultColumns, getNewId } from "../../util/table-util";
@@ -29,41 +26,6 @@ export default function Canvas({
 	const { currentTool, setCurrentTool } = useToolbar();
 	const { setSelectedTable } = useTable();
 	const [toolSelectedNodeTable, setToolSelectedNodeTable] = useState(null);
-	const [cursorX, setCursorX] = useState(0);
-	const [cursorY, setCursorY] = useState(0);
-
-	const handleMouseMove = (event: any) => {
-		setCursorX(event.pageX + 15);
-		setCursorY(event.pageY + 15);
-	};
-
-	const handleMouseLeave = () => {
-		setCursorX(-100);
-		setCursorY(-100);
-	};
-
-	const currentCursosIcon = useMemo(() => {
-		switch (currentTool) {
-			case ToolEnum.CREATE_TABLE:
-				return createTableIcon;
-			case ToolEnum.ONE_TO_MANY:
-				return oneToManyIcon;
-			case ToolEnum.MANY_TO_MANY:
-				return manyToManyIcon;
-			default:
-				return undefined;
-		}
-	}, [currentTool]);
-
-	useEffect(() => {
-		document.addEventListener("mousemove", handleMouseMove);
-		document.addEventListener("mouseleave", handleMouseLeave);
-
-		return () => {
-			document.removeEventListener("mousemove", handleMouseMove);
-			document.removeEventListener("mouseleave", handleMouseLeave);
-		};
-	}, []);
 
 	const nodeTypes = useMemo(() => ({ table: TableNode }), []);
 	const edgeTypes = useMemo(
@@ -329,16 +291,6 @@ export default function Canvas({
 					bgColor="#fcfeff"
 					gap={12}
 					size={1}
-				/>
-
-				<img
-					className="CustomCursorIcon"
-					src={currentCursosIcon}
-					style={{
-						top: cursorY,
-						left: cursorX,
-					}}
-					data-active={currentTool !== ToolEnum.SELECT}
 				/>
 			</ReactFlow>
 		</div>

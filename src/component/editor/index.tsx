@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
 	addEdge,
 	applyNodeChanges,
@@ -15,6 +15,11 @@ import ToolbarDemo from "../tool-bar";
 import Canvas from "../canvas";
 import SidePanel from "../side-panel";
 import { useEditor } from "../../context/editor-context";
+import ToolEnum from "../../enum/tool-enum";
+import { useToolbar } from "../../context/toolbar-context";
+import createTableIcon from "../../assets/create_table_icon_normal.png";
+import oneToManyIcon from "../../assets/one_to_many_icon_normal.png";
+import manyToManyIcon from "../../assets/many_to_many_icon_normal.png";
 
 const er = {
 	tables: [
@@ -353,12 +358,46 @@ const { initialNodes, initialEdges } = loadERFromJSON(er);
 
 export default function Editor() {
 	const { nodes, setNodes, edges, setEdges } = useEditor();
-
+	const { currentTool } = useToolbar();
 	const { selectedTable } = useTable();
+
+	const [cursorX, setCursorX] = useState(0);
+	const [cursorY, setCursorY] = useState(0);
+
+	const handleMouseMove = (event: any) => {
+		setCursorX(event.pageX + 15);
+		setCursorY(event.pageY + 15);
+	};
+
+	const handleMouseLeave = () => {
+		setCursorX(-100);
+		setCursorY(-100);
+	};
+
+	const currentCursosIcon = useMemo(() => {
+		switch (currentTool) {
+			case ToolEnum.CREATE_TABLE:
+				return createTableIcon;
+			case ToolEnum.ONE_TO_MANY:
+				return oneToManyIcon;
+			case ToolEnum.MANY_TO_MANY:
+				return manyToManyIcon;
+			default:
+				return undefined;
+		}
+	}, [currentTool]);
 
 	useEffect(() => {
 		setNodes(initialNodes);
 		setEdges(initialEdges);
+
+		document.addEventListener("mousemove", handleMouseMove);
+		document.addEventListener("mouseleave", handleMouseLeave);
+
+		return () => {
+			document.removeEventListener("mousemove", handleMouseMove);
+			document.removeEventListener("mouseleave", handleMouseLeave);
+		};
 	}, []);
 
 	const onNodesChange = useCallback(
@@ -409,6 +448,15 @@ export default function Editor() {
 					</>
 				)}
 			</PanelGroup>
+			<img
+				className="CustomCursorIcon"
+				src={currentCursosIcon}
+				style={{
+					top: cursorY,
+					left: cursorX,
+				}}
+				data-active={currentTool !== ToolEnum.SELECT}
+			/>
 		</div>
 	);
 }

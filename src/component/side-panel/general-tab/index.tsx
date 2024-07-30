@@ -27,6 +27,32 @@ const GeneralTab = () => {
 		setColumns(selectedTable?.columns || "");
 	}, [selectedTable]);
 
+	useEffect(() => {
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if (e.key === "C" && e.ctrlKey && e.shiftKey) {
+				createNewColumn();
+				setTimeout(() => {
+					const lastColumn = document.querySelector(
+						".ColumnContainer:last-child .Input",
+					);
+					if (lastColumn) {
+						(lastColumn as any).focus();
+						(lastColumn as any).setSelectionRange(
+							0,
+							(lastColumn as any).value.length,
+						);
+					}
+				}, 50);
+
+				e.preventDefault();
+			}
+		};
+		document.addEventListener("keydown", handleKeyDown);
+		return () => {
+			document.removeEventListener("keydown", handleKeyDown);
+		};
+	}, [columns]);
+
 	const handleChange = (e: any) => {
 		const updatedName = e.target.value;
 		setName(updatedName);
