@@ -273,7 +273,7 @@ export default function Canvas({
 				onEdgesChange={onEdgesChange}
 				onConnect={onConnect}
 				proOptions={{ hideAttribution: true }}
-				minZoom={0.1}
+				minZoom={0.2}
 				onPaneClick={onCanvasClick}
 				onNodeClick={onTableClick}
 				onNodeDoubleClick={onTableDoubleClick}

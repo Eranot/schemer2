@@ -5,10 +5,15 @@ import { crateJsonByER, loadERFromJSON } from "../../util/load-util";
 import { useReactFlow } from "@xyflow/react";
 import { saveAs } from "file-saver";
 import { useEffect, useState } from "react";
+import NewFileWarningDialog from "./new-file-warning-dialog";
+import { useEditor } from "../../context/editor-context";
 
 export default function MenuBar() {
 	const [originalFileName, setOriginalFileName] = useState<string>("");
+	const [isNewFileDialogOpen, setIsNewFileDialogOpen] =
+		useState<boolean>(false);
 
+	const editor = useEditor();
 	const reactFlow = useReactFlow();
 
 	useEffect(() => {
@@ -34,6 +39,16 @@ export default function MenuBar() {
 			window.removeEventListener("keydown", handleCtrlO);
 		};
 	}, []);
+
+	const onNewFile = () => {
+		setIsNewFileDialogOpen(true);
+	};
+
+	const startNewFile = () => {
+		editor.setEdges([]);
+		editor.setNodes([]);
+		setIsNewFileDialogOpen(false);
+	};
 
 	const onOpenFile = () => {
 		const input = document.createElement("input");
@@ -69,63 +84,81 @@ export default function MenuBar() {
 		saveAs(blob, originalFileName || "er.schemer");
 	};
 
+	const onClickWebsite = () => {
+		window.open("https://schemer.gg");
+	};
+
+	const onClickGithub = () => {
+		window.open("https://github.com/Eranot/schemer2");
+	};
+
 	return (
-		<Menubar.Root className="MenubarRoot">
-			<Menubar.Menu>
-				<Menubar.Trigger className="MenubarTrigger">
-					File
-				</Menubar.Trigger>
-				<Menubar.Portal>
-					<Menubar.Content
-						className="MenubarContent"
-						align="start"
-						sideOffset={5}
-						alignOffset={-3}
-					>
-						<Menubar.Item className="MenubarItem">
-							New File
-						</Menubar.Item>
-						<Menubar.Item
-							className="MenubarItem"
-							onClick={onOpenFile}
+		<>
+			<Menubar.Root className="MenubarRoot">
+				<Menubar.Menu>
+					<Menubar.Trigger className="MenubarTrigger">
+						File
+					</Menubar.Trigger>
+					<Menubar.Portal>
+						<Menubar.Content
+							className="MenubarContent"
+							align="start"
+							sideOffset={5}
+							alignOffset={-3}
 						>
-							Open file
-						</Menubar.Item>
-						<Menubar.Item
-							className="MenubarItem"
-							onClick={onSaveFile}
+							<Menubar.Item
+								className="MenubarItem"
+								onClick={onNewFile}
+							>
+								New File
+							</Menubar.Item>
+							<Menubar.Item
+								className="MenubarItem"
+								onClick={onOpenFile}
+							>
+								Open file
+							</Menubar.Item>
+							<Menubar.Item
+								className="MenubarItem"
+								onClick={onSaveFile}
+							>
+								Save
+							</Menubar.Item>
+						</Menubar.Content>
+					</Menubar.Portal>
+				</Menubar.Menu>
+				<Menubar.Menu>
+					<Menubar.Trigger className="MenubarTrigger">
+						Help
+					</Menubar.Trigger>
+					<Menubar.Portal>
+						<Menubar.Content
+							className="MenubarContent"
+							align="start"
+							sideOffset={5}
+							alignOffset={-3}
 						>
-							Save
-						</Menubar.Item>
-						<Menubar.Item className="MenubarItem">
-							Save as
-						</Menubar.Item>
-					</Menubar.Content>
-				</Menubar.Portal>
-			</Menubar.Menu>
-			<Menubar.Menu>
-				<Menubar.Trigger className="MenubarTrigger">
-					Help
-				</Menubar.Trigger>
-				<Menubar.Portal>
-					<Menubar.Content
-						className="MenubarContent"
-						align="start"
-						sideOffset={5}
-						alignOffset={-3}
-					>
-						<Menubar.Item className="MenubarItem">
-							Websiter
-						</Menubar.Item>
-						<Menubar.Item className="MenubarItem">
-							Github
-						</Menubar.Item>
-						<Menubar.Item className="MenubarItem">
-							About
-						</Menubar.Item>
-					</Menubar.Content>
-				</Menubar.Portal>
-			</Menubar.Menu>
-		</Menubar.Root>
+							<Menubar.Item
+								className="MenubarItem"
+								onClick={onClickWebsite}
+							>
+								Website
+							</Menubar.Item>
+							<Menubar.Item
+								className="MenubarItem"
+								onClick={onClickGithub}
+							>
+								Github
+							</Menubar.Item>
+						</Menubar.Content>
+					</Menubar.Portal>
+				</Menubar.Menu>
+			</Menubar.Root>
+			<NewFileWarningDialog
+				open={isNewFileDialogOpen}
+				onConfirm={startNewFile}
+				onCancel={() => setIsNewFileDialogOpen(false)}
+			/>
+		</>
 	);
 }
