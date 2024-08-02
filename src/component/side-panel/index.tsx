@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import GeneralTab from "./general-tab";
 
 import "./style.css";
+import ForeignKeysTab from "./foreign-keys-tab";
 
 const SidePanel = () => {
 	const { setSelectedTable } = useTable();
@@ -36,7 +37,7 @@ const SidePanel = () => {
 					<GeneralTab />
 				</Tabs.Content>
 				<Tabs.Content value="foreign_keys">
-					Tab two content
+					<ForeignKeysTab />
 				</Tabs.Content>
 			</Tabs.Root>
 		</div>

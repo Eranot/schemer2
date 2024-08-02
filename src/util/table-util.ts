@@ -1,7 +1,8 @@
 import { ReactFlowInstance } from "@xyflow/react";
+import Constraint from "../type/contraint";
 
-export function getNewId(): string {
-	return Math.floor(Math.random() * 9000000000 + 1000000000).toString();
+export function getNewId(): number {
+	return Math.floor(Math.random() * 9000000000 + 1000000000);
 }
 
 export function getDefaultColumns(): any[] {
@@ -46,6 +47,51 @@ export function removeColumn(
 			reactflow.updateNode(table.id, { data: table });
 		}
 	}
+}
+
+export function removeForeignKey(
+	originTable: any,
+	constraintId: number,
+	reactflow: ReactFlowInstance,
+) {
+	const contraint = originTable.constraints.find(
+		(constraint: any) => constraint.id === constraintId,
+	) as Constraint;
+
+	// Remove edges
+	for (const relationship of contraint.relationships) {
+		reactflow.deleteElements({
+			edges: [{ id: relationship.id.toString() }],
+		});
+	}
+
+	const updatedConstraints = originTable.constraints.filter(
+		(constraint: any) => constraint.id !== constraintId,
+	);
+
+	originTable.constraints = updatedConstraints;
+	reactflow.updateNode(originTable.id, { data: originTable });
+}
+
+export function removeRelationship(
+	originTable: any,
+	constraintId: number,
+	relationshipId: number,
+	reactflow: ReactFlowInstance,
+) {
+	const updatedConstraints = originTable.constraints.map(
+		(constraint: any) => {
+			if (constraint.id === constraintId) {
+				constraint.relationships = constraint.relationships.filter(
+					(relationship: any) => relationship.id !== relationshipId,
+				);
+			}
+			return constraint;
+		},
+	);
+	originTable.constraints = updatedConstraints;
+	reactflow.updateNode(originTable.id, { data: originTable });
+	reactflow.deleteElements({ edges: [{ id: relationshipId.toString() }] });
 }
 
 export function moveColumn(

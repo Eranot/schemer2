@@ -1,7 +1,8 @@
 import React, { createContext, useState, useContext, ReactNode } from "react";
+import Table from "../type/table";
 
 interface TableContextProps {
-	selectedTable: any | null;
+	selectedTable: Table | null;
 	setSelectedTable: (table: any | null) => void;
 }
 

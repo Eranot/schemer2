@@ -122,13 +122,16 @@ export default function Canvas({
 				is_auto_increment: false,
 			};
 			sourceNode.data.columns.push(newColumn);
-			newConstraint.relationships.push({
+
+			const newRelationship = {
+				id: getNewId(),
 				own_column_id: newColumn.id,
 				target_column_id: primaryKey.id,
-			});
+			};
 
+			newConstraint.relationships.push(newRelationship);
 			const newEdge = {
-				id: getNewId(),
+				id: newRelationship.id.toString(),
 				source: sourceNode.id.toString(),
 				sourceHandle: newColumn.id + "_source",
 				target: targetNode.id.toString(),
@@ -192,13 +195,16 @@ export default function Canvas({
 				is_auto_increment: false,
 			};
 			newIntermediateTable.data.columns.push(newColumn);
-			sourceConstraint.relationships.push({
+
+			const newRelationship = {
+				id: getNewId(),
 				own_column_id: newColumn.id,
 				target_column_id: primaryKey.id,
-			});
+			};
+			sourceConstraint.relationships.push(newRelationship);
 
 			const newEdge = {
-				id: getNewId(),
+				id: newRelationship.id.toString(),
 				source: newIntermediateTable.id.toString(),
 				sourceHandle: newColumn.id + "_source",
 				target: sourceNode.id.toString(),
@@ -236,13 +242,16 @@ export default function Canvas({
 				is_auto_increment: false,
 			};
 			newIntermediateTable.data.columns.push(newColumn);
-			targetConstraint.relationships.push({
+
+			const newRelationship = {
+				id: getNewId(),
 				own_column_id: newColumn.id,
 				target_column_id: primaryKey.id,
-			});
+			};
+			targetConstraint.relationships.push(newRelationship);
 
 			const newEdge = {
-				id: getNewId(),
+				id: newRelationship.id.toString(),
 				source: newIntermediateTable.id.toString(),
 				sourceHandle: newColumn.id + "_source",
 				target: targetNode.id.toString(),

@@ -20,11 +20,11 @@ const GeneralTab = () => {
 
 	const reactFlow = useReactFlow();
 	const [name, setName] = useState(selectedTable?.name || "");
-	const [columns, setColumns] = useState(selectedTable?.columns || "");
+	const [columns, setColumns] = useState(selectedTable?.columns || []);
 
 	useEffect(() => {
 		setName(selectedTable?.name || "");
-		setColumns(selectedTable?.columns || "");
+		setColumns(selectedTable?.columns || []);
 	}, [selectedTable]);
 
 	useEffect(() => {
@@ -54,13 +54,18 @@ const GeneralTab = () => {
 	}, [columns]);
 
 	const handleChange = (e: any) => {
+		if (!selectedTable) return;
 		const updatedName = e.target.value;
 		setName(updatedName);
 		selectedTable.name = updatedName;
-		reactFlow.updateNode(selectedTable.id, { data: selectedTable });
+		reactFlow.updateNode(selectedTable.id.toString(), {
+			data: selectedTable,
+		});
 	};
 
 	const createNewColumn = () => {
+		if (!selectedTable) return;
+
 		const newColumn = {
 			id: getNewId(),
 			name: "new_col",
@@ -72,7 +77,7 @@ const GeneralTab = () => {
 		};
 		setColumns([...columns, newColumn]);
 		selectedTable.columns = [...selectedTable.columns, newColumn];
-		reactFlow.updateNode(selectedTable.id, {
+		reactFlow.updateNode(selectedTable.id.toString(), {
 			data: selectedTable,
 		});
 	};
@@ -112,7 +117,7 @@ const GeneralTab = () => {
 										className="DropdownMenuItem"
 										onClick={() =>
 											removeTable(
-												selectedTable.id.toString(),
+												selectedTable!.id.toString(),
 												reactFlow,
 											)
 										}

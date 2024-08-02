@@ -147,6 +147,15 @@ const er = {
 					type: "int",
 				},
 				{
+					id: 600016732,
+					is_auto_increment: false,
+					is_not_null: true,
+					is_primary_key: false,
+					is_unique: false,
+					name: "id_2",
+					type: "int",
+				},
+				{
 					id: 600016737,
 					is_auto_increment: false,
 					is_not_null: true,
