@@ -1,47 +1,68 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import {
 	ReactFlow,
 	Background,
 	BackgroundVariant,
 	useReactFlow,
+	Node,
+	NodeChange,
+	applyNodeChanges,
+	EdgeChange,
+	applyEdgeChanges,
 } from "@xyflow/react";
 import TableNode from "../table-node";
 import SimpleFloatingEdge from "../simple-floating-edge";
-import { getDefaultColumns, getNewId } from "../../util/table-util";
+import {
+	createManyToManyRelationship,
+	createNewTable,
+	createOneToManyRelationship,
+} from "../../util/table-util";
 import { useToolbar } from "../../context/toolbar-context";
-import ToolEnum from "../../enum/tool-enum";
+import { useEditor } from "../../context/editor-context";
 import { useTable } from "../../context/table-context";
+import ToolEnum from "../../enum/tool-enum";
+import Table from "../../type/table";
 import "@xyflow/react/dist/style.css";
 import "./style.css";
 
-export default function Canvas({
-	nodes,
-	edges,
-	onNodesChange,
-	onEdgesChange,
-	onConnect,
-	setNodes,
-}: any) {
+export default function Canvas() {
 	const reactFlow = useReactFlow();
 	const { currentTool, setCurrentTool } = useToolbar();
 	const { setSelectedTable } = useTable();
+	const { nodes, setNodes, edges, setEdges } = useEditor();
+
 	const [toolSelectedNodeTable, setToolSelectedNodeTable] = useState(null);
 
-	const nodeTypes = useMemo(() => ({ table: TableNode }), []);
-	const edgeTypes = useMemo(
-		() => ({
-			floating: SimpleFloatingEdge,
-		}),
-		[],
+	const nodeTypes = { table: TableNode };
+	const edgeTypes = {
+		floating: SimpleFloatingEdge,
+	};
+
+	const onNodesChange = useCallback(
+		(changes: NodeChange[]) =>
+			setNodes((nds: Node[]) => applyNodeChanges(changes, nds)),
+		[setNodes],
+	);
+
+	const onEdgesChange = useCallback(
+		(changes: EdgeChange[]) =>
+			setEdges((eds: any) => applyEdgeChanges(changes, eds)),
+		[setEdges],
 	);
 
 	const onCanvasClick = useCallback(
 		(event: any) => {
 			switch (currentTool) {
 				case ToolEnum.CREATE_TABLE:
-					const tableNome = createNewTable(event);
-					setCurrentTool(ToolEnum.SELECT);
+					const tableNome = createNewTable(
+						reactFlow.screenToFlowPosition({
+							x: event.clientX,
+							y: event.clientY,
+						}),
+						reactFlow,
+					);
 					setSelectedTable(tableNome.data);
+					setCurrentTool(ToolEnum.SELECT);
 					break;
 				default:
 					break;
@@ -56,7 +77,11 @@ export default function Canvas({
 				if (!toolSelectedNodeTable) {
 					setToolSelectedNodeTable(node);
 				} else {
-					createOneToManyRelationship(toolSelectedNodeTable, node);
+					createOneToManyRelationship(
+						toolSelectedNodeTable,
+						node,
+						reactFlow,
+					);
 					setToolSelectedNodeTable(null);
 					setCurrentTool(ToolEnum.SELECT);
 				}
@@ -65,7 +90,11 @@ export default function Canvas({
 				if (!toolSelectedNodeTable) {
 					setToolSelectedNodeTable(node);
 				} else {
-					createManyToManyRelationship(toolSelectedNodeTable, node);
+					createManyToManyRelationship(
+						toolSelectedNodeTable,
+						node,
+						reactFlow,
+					);
 					setToolSelectedNodeTable(null);
 					setCurrentTool(ToolEnum.SELECT);
 				}
@@ -75,200 +104,8 @@ export default function Canvas({
 		}
 	};
 
-	const onTableDoubleClick = (_event: any, node: any) => {
-		setSelectedTable(node.data);
-	};
-
-	const createNewTable = (event: any) => {
-		const newNode = {
-			id: getNewId(),
-			type: "table",
-			position: reactFlow.screenToFlowPosition({
-				x: event.clientX,
-				y: event.clientY,
-			}),
-			data: {
-				name: "new_table",
-				columns: getDefaultColumns(),
-				constraints: [],
-			},
-		};
-		setNodes((nds: any[]) => {
-			return nds.concat(newNode);
-		});
-		return newNode;
-	};
-
-	const createOneToManyRelationship = (sourceNode: any, targetNode: any) => {
-		const targetPrimaryKeys = targetNode.data.columns.filter(
-			(column: any) => column.is_primary_key,
-		);
-
-		const newConstraint: any = {
-			id: getNewId(),
-			relationships: [],
-			target_table_id: targetNode.id,
-			type: 0,
-		};
-
-		for (const primaryKey of targetPrimaryKeys) {
-			const newColumn = {
-				id: getNewId(),
-				name: targetNode.data.name + "_" + primaryKey.name,
-				type: primaryKey.type,
-				is_primary_key: false,
-				is_not_null: true,
-				is_unique: false,
-				is_auto_increment: false,
-			};
-			sourceNode.data.columns.push(newColumn);
-
-			const newRelationship = {
-				id: getNewId(),
-				own_column_id: newColumn.id,
-				target_column_id: primaryKey.id,
-			};
-
-			newConstraint.relationships.push(newRelationship);
-			const newEdge = {
-				id: newRelationship.id.toString(),
-				source: sourceNode.id.toString(),
-				sourceHandle: newColumn.id + "_source",
-				target: targetNode.id.toString(),
-				targetHandle: primaryKey.id + "_target",
-				type: "floating",
-				data: {
-					contraint_id: newConstraint.id,
-				},
-			};
-
-			reactFlow.addEdges([newEdge]);
-		}
-
-		sourceNode.data.constraints.push(newConstraint);
-		reactFlow.updateNode(sourceNode.id, { data: sourceNode.data });
-	};
-
-	const createManyToManyRelationship = (sourceNode: any, targetNode: any) => {
-		const targetPrimaryKeys = targetNode.data.columns.filter(
-			(column: any) => column.is_primary_key,
-		);
-
-		const sourcePrimaryKeys = sourceNode.data.columns.filter(
-			(column: any) => column.is_primary_key,
-		);
-
-		const middlePosition = {
-			x: (sourceNode.position.x + targetNode.position.x) / 2,
-			y: (sourceNode.position.y + targetNode.position.y) / 2,
-		};
-
-		const newIntermediateTable: any = {
-			id: getNewId(),
-			type: "table",
-			position: middlePosition,
-			origin: [0.5, 0.0],
-			data: {
-				name: sourceNode.data.name + "_" + targetNode.data.name,
-				columns: [],
-				constraints: [],
-			},
-		};
-		reactFlow.addNodes([newIntermediateTable]);
-
-		// add the constraints of the source node
-		const sourceConstraint: any = {
-			id: getNewId(),
-			relationships: [],
-			target_table_id: sourceNode.id,
-			type: 1,
-		};
-
-		for (const primaryKey of sourcePrimaryKeys) {
-			const newColumn: any = {
-				id: getNewId(),
-				name: sourceNode.data.name + "_" + primaryKey.name,
-				type: primaryKey.type,
-				is_primary_key: true,
-				is_not_null: false,
-				is_unique: false,
-				is_auto_increment: false,
-			};
-			newIntermediateTable.data.columns.push(newColumn);
-
-			const newRelationship = {
-				id: getNewId(),
-				own_column_id: newColumn.id,
-				target_column_id: primaryKey.id,
-			};
-			sourceConstraint.relationships.push(newRelationship);
-
-			const newEdge = {
-				id: newRelationship.id.toString(),
-				source: newIntermediateTable.id.toString(),
-				sourceHandle: newColumn.id + "_source",
-				target: sourceNode.id.toString(),
-				targetHandle: primaryKey.id + "_target",
-				type: "floating",
-				data: {
-					contraint_id: sourceConstraint.id,
-				},
-			};
-
-			reactFlow.addEdges([newEdge]);
-		}
-
-		newIntermediateTable.data.constraints.push(sourceConstraint);
-		reactFlow.updateNode(newIntermediateTable.id, {
-			data: newIntermediateTable.data,
-		});
-
-		// add the constraints of the target node
-		const targetConstraint: any = {
-			id: getNewId(),
-			relationships: [],
-			target_table_id: targetNode.id,
-			type: 1,
-		};
-
-		for (const primaryKey of targetPrimaryKeys) {
-			const newColumn: any = {
-				id: getNewId(),
-				name: targetNode.data.name + "_" + primaryKey.name,
-				type: primaryKey.type,
-				is_primary_key: true,
-				is_not_null: false,
-				is_unique: false,
-				is_auto_increment: false,
-			};
-			newIntermediateTable.data.columns.push(newColumn);
-
-			const newRelationship = {
-				id: getNewId(),
-				own_column_id: newColumn.id,
-				target_column_id: primaryKey.id,
-			};
-			targetConstraint.relationships.push(newRelationship);
-
-			const newEdge = {
-				id: newRelationship.id.toString(),
-				source: newIntermediateTable.id.toString(),
-				sourceHandle: newColumn.id + "_source",
-				target: targetNode.id.toString(),
-				targetHandle: primaryKey.id + "_target",
-				type: "floating",
-				data: {
-					contraint_id: targetConstraint.id,
-				},
-			};
-
-			reactFlow.addEdges([newEdge]);
-		}
-
-		newIntermediateTable.data.constraints.push(targetConstraint);
-		reactFlow.updateNode(newIntermediateTable.id, {
-			data: newIntermediateTable.data,
-		});
+	const onTableDoubleClick = (_event: any, node: Node) => {
+		setSelectedTable(node.data as Table);
 	};
 
 	return (
@@ -280,7 +117,6 @@ export default function Canvas({
 				edgeTypes={edgeTypes}
 				onNodesChange={onNodesChange}
 				onEdgesChange={onEdgesChange}
-				onConnect={onConnect}
 				proOptions={{ hideAttribution: true }}
 				minZoom={0.2}
 				onPaneClick={onCanvasClick}

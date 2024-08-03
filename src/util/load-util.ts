@@ -1,4 +1,43 @@
+import { Node } from "@xyflow/react";
 import { getNewId } from "./table-util";
+import Table from "../type/table";
+
+export function getDefaultEr() {
+	return {
+		tables: [
+			{
+				columns: [
+					{
+						id: 1905473290,
+						is_auto_increment: true,
+						is_not_null: false,
+						is_primary_key: true,
+						is_unique: false,
+						name: "id",
+						type: "int",
+					},
+					{
+						id: 850743278,
+						is_auto_increment: false,
+						is_not_null: true,
+						is_primary_key: false,
+						is_unique: false,
+						name: "name",
+						type: "varchar",
+					},
+				],
+				constraints: [],
+				id: 1324743907,
+				name: "person",
+				position: {
+					x: 800,
+					y: 350,
+				},
+			},
+		],
+		version: 1,
+	};
+}
 
 export function loadERFromJSON(er: any) {
 	// For retro-compatibility, add id to relationships if it doesn't exist
@@ -49,13 +88,12 @@ export function loadERFromJSON(er: any) {
 	};
 }
 
-export function crateJsonByER(nodes: any, edges: any) {
-	const tables = nodes.map((node: any) => {
+export function createJsonByER(nodes: Node<Table>[]) {
+	const tables: Table[] = nodes.map((node: Node<Table>) => {
 		return {
 			id: parseInt(node.id),
 			name: node.data.name,
 			position: node.position,
-			size: node.size,
 			columns: node.data.columns,
 			constraints: node.data.constraints,
 		};

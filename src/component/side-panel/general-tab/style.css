@@ -5,6 +5,20 @@ button {
 	box-sizing: border-box;
 }
 
+.TabTitle {
+	display: flex;
+	align-items: flex-end;
+	gap: 6px;
+}
+
+.TableVerticalDos {
+	margin-bottom: 1px;
+}
+
+.NameField {
+	flex-grow: 1;
+}
+
 .TabContainer {
 	padding: 8px 16px;
 	overflow-y: auto;

@@ -1,30 +1,47 @@
-import * as Form from "@radix-ui/react-form";
 import * as Checkbox from "@radix-ui/react-checkbox";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { CheckIcon, PlusIcon, DotsVerticalIcon } from "@radix-ui/react-icons";
-
 import { ReactFlowInstance, useReactFlow } from "@xyflow/react";
 import { useEffect, useState } from "react";
+import { useTable } from "../../../context/table-context";
 import {
 	getNewId,
 	moveColumn,
 	removeColumn,
 	removeTable,
 } from "../../../util/table-util";
+import Column from "../../../type/column";
 
 import "./style.css";
-import { useTable } from "../../../context/table-context";
 
 const GeneralTab = () => {
-	const { selectedTable } = useTable();
+	const { selectedTable, setSelectedTable } = useTable();
 
 	const reactFlow = useReactFlow();
 	const [name, setName] = useState(selectedTable?.name || "");
-	const [columns, setColumns] = useState(selectedTable?.columns || []);
+	const [columns, setColumns] = useState<Column[]>(
+		selectedTable?.columns || [],
+	);
 
 	useEffect(() => {
 		setName(selectedTable?.name || "");
 		setColumns(selectedTable?.columns || []);
+
+		if (selectedTable) {
+			// Focus on the name input when a table is selected
+			setTimeout(() => {
+				const nameInput = document.querySelector(
+					".TabContainer .NameField .Input",
+				);
+				if (nameInput) {
+					(nameInput as any).focus();
+					(nameInput as any).setSelectionRange(
+						0,
+						(nameInput as any).value.length,
+					);
+				}
+			}, 50);
+		}
 	}, [selectedTable]);
 
 	useEffect(() => {
@@ -53,7 +70,13 @@ const GeneralTab = () => {
 		};
 	}, [columns]);
 
-	const handleChange = (e: any) => {
+	const onRemoveTable = () => {
+		if (!selectedTable) return;
+		removeTable(selectedTable.id, reactFlow);
+		setSelectedTable(null);
+	};
+
+	const handleNameChange = (e: any) => {
 		if (!selectedTable) return;
 		const updatedName = e.target.value;
 		setName(updatedName);
@@ -66,7 +89,7 @@ const GeneralTab = () => {
 	const createNewColumn = () => {
 		if (!selectedTable) return;
 
-		const newColumn = {
+		const newColumn: Column = {
 			id: getNewId(),
 			name: "new_col",
 			type: "varchar",
@@ -84,74 +107,69 @@ const GeneralTab = () => {
 
 	return (
 		<div className="TabContainer">
-			<Form.Root onSubmit={(e) => e.preventDefault()}>
-				<div className="TabTitle">
-					<div className="FormField NameField">
-						<label className="FormLabel">Name</label>
-						<input
-							className="Input"
-							value={name}
-							onChange={handleChange}
-							required
-						/>
-					</div>
-
-					<div className="TableVerticalDos">
-						<DropdownMenu.Root>
-							<DropdownMenu.Trigger asChild>
-								<button
-									className="IconButton"
-									aria-label="Options"
-								>
-									<DotsVerticalIcon className="DotsIcon" />
-								</button>
-							</DropdownMenu.Trigger>
-
-							<DropdownMenu.Portal>
-								<DropdownMenu.Content
-									className="DropdownMenuContent"
-									sideOffset={5}
-									align="end"
-								>
-									<DropdownMenu.Item
-										className="DropdownMenuItem"
-										onClick={() =>
-											removeTable(
-												selectedTable!.id.toString(),
-												reactFlow,
-											)
-										}
-									>
-										Remove table
-									</DropdownMenu.Item>
-								</DropdownMenu.Content>
-							</DropdownMenu.Portal>
-						</DropdownMenu.Root>
-					</div>
+			<div className="TabTitle">
+				<div className="FormField NameField">
+					<label className="FormLabel">Name</label>
+					<input
+						className="Input"
+						value={name}
+						onChange={handleNameChange}
+						required
+					/>
 				</div>
 
-				<div className="ColumnsTitleContainer">
-					<div style={{ flexGrow: 1 }}>Columns</div>
-					<button className="Button" onClick={createNewColumn}>
-						<PlusIcon style={{ width: 26, height: 26 }} />
-					</button>
+				<div className="TableVerticalDos">
+					<DropdownMenu.Root>
+						<DropdownMenu.Trigger asChild>
+							<button className="IconButton" aria-label="Options">
+								<DotsVerticalIcon className="DotsIcon" />
+							</button>
+						</DropdownMenu.Trigger>
+
+						<DropdownMenu.Portal>
+							<DropdownMenu.Content
+								className="DropdownMenuContent"
+								sideOffset={5}
+								align="end"
+							>
+								<DropdownMenu.Item
+									className="DropdownMenuItem"
+									onClick={onRemoveTable}
+								>
+									Remove table
+								</DropdownMenu.Item>
+							</DropdownMenu.Content>
+						</DropdownMenu.Portal>
+					</DropdownMenu.Root>
 				</div>
-				{columns &&
-					columns.map((column: any, index: number) => (
-						<Column
-							key={column.id}
-							selectedTable={selectedTable}
-							column={column}
-							setColumns={setColumns}
-							showLabels={index === 0}
-						/>
-					))}
-			</Form.Root>
+			</div>
+
+			<div className="ColumnsTitleContainer">
+				<div style={{ flexGrow: 1 }}>Columns</div>
+				<button className="Button" onClick={createNewColumn}>
+					<PlusIcon style={{ width: 26, height: 26 }} />
+				</button>
+			</div>
+			{columns &&
+				columns.map((column: any, index: number) => (
+					<ColumnContainer
+						key={column.id}
+						selectedTable={selectedTable}
+						column={column}
+						setColumns={setColumns}
+						showLabels={index === 0}
+					/>
+				))}
 		</div>
 	);
 };
 
-const Column = ({ selectedTable, column, setColumns, showLabels }: any) => {
+const ColumnContainer = ({
+	selectedTable,
+	column,
+	setColumns,
+	showLabels,
+}: any) => {
 	const reactFlow: ReactFlowInstance = useReactFlow();
 
 	const [name, setName] = useState(column?.name || "");
@@ -166,6 +184,7 @@ const Column = ({ selectedTable, column, setColumns, showLabels }: any) => {
 	);
 
 	const handleChangeName = (e: any) => {
+		if (!selectedTable) return;
 		const updatedValue = e.target.value;
 		setName(updatedValue);
 		column.name = updatedValue;
@@ -173,6 +192,7 @@ const Column = ({ selectedTable, column, setColumns, showLabels }: any) => {
 	};
 
 	const handleChangeType = (e: any) => {
+		if (!selectedTable) return;
 		const updatedValue = e.target.value;
 		setType(updatedValue);
 		column.type = updatedValue;
@@ -180,6 +200,7 @@ const Column = ({ selectedTable, column, setColumns, showLabels }: any) => {
 	};
 
 	const handleChangeIsPrimaryKey = (value: boolean) => {
+		if (!selectedTable) return;
 		const updatedValue = value;
 		setIsPrimaryKey(updatedValue);
 		column.is_primary_key = updatedValue;
@@ -187,6 +208,7 @@ const Column = ({ selectedTable, column, setColumns, showLabels }: any) => {
 	};
 
 	const handleChangeIsNotNull = (value: boolean) => {
+		if (!selectedTable) return;
 		const updatedValue = value;
 		setIsNotNull(updatedValue);
 		column.is_not_null = updatedValue;
@@ -194,6 +216,7 @@ const Column = ({ selectedTable, column, setColumns, showLabels }: any) => {
 	};
 
 	const handleChangeIsUnique = (value: boolean) => {
+		if (!selectedTable) return;
 		const updatedValue = value;
 		setIsUnique(updatedValue);
 		column.is_unique = updatedValue;
@@ -201,6 +224,7 @@ const Column = ({ selectedTable, column, setColumns, showLabels }: any) => {
 	};
 
 	const handleChangeIsAutoIncrement = (value: boolean) => {
+		if (!selectedTable) return;
 		const updatedValue = value;
 		setIsAutoIncrement(updatedValue);
 		column.is_auto_increment = updatedValue;

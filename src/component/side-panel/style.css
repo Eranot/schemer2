@@ -21,17 +21,3 @@
 .TabsTrigger[data-state="active"] {
 	background-color: #191c20;
 }
-
-.TabTitle {
-	display: flex;
-	align-items: flex-end;
-	gap: 6px;
-}
-
-.TableVerticalDos {
-	margin-bottom: 1px;
-}
-
-.NameField {
-	flex-grow: 1;
-}

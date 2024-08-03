@@ -1,4 +1,3 @@
-import * as Form from "@radix-ui/react-form";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { PlusIcon, DotsVerticalIcon } from "@radix-ui/react-icons";
 
@@ -52,28 +51,26 @@ const ForeignKeysTab = () => {
 
 	return (
 		<div className="TabContainer">
-			<Form.Root onSubmit={(e) => e.preventDefault()}>
-				<div className="ColumnsTitleContainer">
-					<div style={{ flexGrow: 1 }}>Foreign keys</div>
-					<button className="Button" onClick={createNewForeignKey}>
-						<PlusIcon style={{ width: 26, height: 26 }} />
-					</button>
-				</div>
-				{foreignKeys &&
-					foreignKeys.map((foreignKey: any) => (
-						<ForeignKey
-							key={foreignKey.id}
-							selectedTable={selectedTable}
-							foreignKey={foreignKey}
-							setForeignKeys={setForeignKeys}
-						/>
-					))}
-			</Form.Root>
+			<div className="ForeignKeysTitleContainer">
+				<div style={{ flexGrow: 1 }}>Foreign keys</div>
+				<button className="Button" onClick={createNewForeignKey}>
+					<PlusIcon style={{ width: 26, height: 26 }} />
+				</button>
+			</div>
+			{foreignKeys &&
+				foreignKeys.map((foreignKey: any) => (
+					<ForeignKeyContainer
+						key={foreignKey.id}
+						selectedTable={selectedTable}
+						foreignKey={foreignKey}
+						setForeignKeys={setForeignKeys}
+					/>
+				))}
 		</div>
 	);
 };
 
-const ForeignKey = ({ selectedTable, foreignKey }: any) => {
+const ForeignKeyContainer = ({ selectedTable, foreignKey }: any) => {
 	const reactFlow: ReactFlowInstance = useReactFlow();
 	const { nodes } = useEditor();
 	const [targetTableId, setTargetTableId] = useState(
@@ -185,7 +182,7 @@ const ForeignKey = ({ selectedTable, foreignKey }: any) => {
 				</DropdownMenu.Root>
 			</div>
 
-			<div className="ColumnsTitleContainer">
+			<div className="RelationshipsTitleContainer">
 				<div style={{ flexGrow: 1 }}>Relationships</div>
 				<button className="Button" onClick={createNewRelationship}>
 					<PlusIcon style={{ width: 26, height: 26 }} />
@@ -194,7 +191,7 @@ const ForeignKey = ({ selectedTable, foreignKey }: any) => {
 			{foreignKey.relationships &&
 				foreignKey.relationships.map(
 					(relationship: any, index: number) => (
-						<Relationship
+						<RelationshipContainer
 							key={"relationship_" + index}
 							relationship={relationship}
 							selectedTable={selectedTable}
@@ -208,7 +205,7 @@ const ForeignKey = ({ selectedTable, foreignKey }: any) => {
 	);
 };
 
-const Relationship = ({
+const RelationshipContainer = ({
 	relationship,
 	selectedTable,
 	foreignKey,

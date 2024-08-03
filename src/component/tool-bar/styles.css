@@ -31,12 +31,6 @@ button {
 	justify-content: center;
 }
 
-.ToolbarToggleGroup {
-	display: flex;
-	flex-direction: column;
-	gap: 8px;
-}
-
 .ToolbarToggleItem:hover {
 	background-color: #474c54;
 }
@@ -50,36 +44,8 @@ button {
 	background-color: #54647e;
 }
 
-.ToolbarSeparator {
-	width: 1px;
-	background-color: var(--mauve-6);
-	margin: 2px 0px;
-}
-
-.ToolbarLink {
-	background-color: transparent;
-	color: var(--mauve-11);
-	display: none;
-	justify-content: center;
-	align-items: center;
-}
-.ToolbarLink:hover {
-	background-color: transparent;
-	cursor: pointer;
-}
-@media (min-width: 520px) {
-	.ToolbarLink {
-		display: inline-flex;
-	}
-}
-
-.ToolbarButton {
-	padding-left: 10px;
-	padding-right: 10px;
-	color: white;
-	background-color: var(--violet-9);
-}
-.ToolbarButton:hover {
-	background-color: var(--violet-10);
-	color: white;
+.ToolbarToggleGroup {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
 }

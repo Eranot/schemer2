@@ -1,12 +1,14 @@
 import * as Menubar from "@radix-ui/react-menubar";
-
-import "./styles.css";
-import { crateJsonByER, loadERFromJSON } from "../../util/load-util";
-import { useReactFlow } from "@xyflow/react";
+import { createJsonByER, loadERFromJSON } from "../../util/load-util";
+import { Node, useReactFlow } from "@xyflow/react";
 import { saveAs } from "file-saver";
 import { useEffect, useState } from "react";
-import NewFileWarningDialog from "./new-file-warning-dialog";
 import { useEditor } from "../../context/editor-context";
+import { useTable } from "../../context/table-context";
+import NewFileWarningDialog from "./new-file-warning-dialog";
+import Table from "../../type/table";
+
+import "./styles.css";
 
 export default function MenuBar() {
 	const [originalFileName, setOriginalFileName] = useState<string>("");
@@ -15,6 +17,7 @@ export default function MenuBar() {
 
 	const editor = useEditor();
 	const reactFlow = useReactFlow();
+	const { setSelectedTable } = useTable();
 
 	useEffect(() => {
 		// ctrl s to save
@@ -47,6 +50,7 @@ export default function MenuBar() {
 	const startNewFile = () => {
 		editor.setEdges([]);
 		editor.setNodes([]);
+		setSelectedTable(null);
 		setIsNewFileDialogOpen(false);
 	};
 
@@ -73,10 +77,7 @@ export default function MenuBar() {
 	};
 
 	const onSaveFile = () => {
-		const fileJson = crateJsonByER(
-			reactFlow.getNodes(),
-			reactFlow.getEdges(),
-		);
+		const fileJson = createJsonByER(reactFlow.getNodes() as Node<Table>[]);
 		const json = JSON.stringify(fileJson, null, 4);
 		const blob = new Blob([json], {
 			type: "application/json",

@@ -3,7 +3,7 @@ import Table from "../type/table";
 
 interface TableContextProps {
 	selectedTable: Table | null;
-	setSelectedTable: (table: any | null) => void;
+	setSelectedTable: (table: Table | null) => void;
 }
 
 const TableContext = createContext<TableContextProps | undefined>(undefined);

@@ -1,20 +1,228 @@
-import { ReactFlowInstance } from "@xyflow/react";
+import { Edge, Node, ReactFlowInstance } from "@xyflow/react";
 import Constraint from "../type/contraint";
+import Table from "../type/table";
+import Column from "../type/column";
+import ConstraintTypeEnum from "../enum/constraint-type-enum";
+import ConstraintRelationship from "../type/constraint-relationship";
 
 export function getNewId(): number {
 	return Math.floor(Math.random() * 9000000000 + 1000000000);
 }
 
-export function getDefaultColumns(): any[] {
+export function getDefaultColumns(): Column[] {
 	return [
 		{
 			id: getNewId(),
 			name: "id",
 			type: "int",
+			is_auto_increment: false,
 			is_primary_key: true,
-			is_nullable: false,
+			is_not_null: false,
+			is_unique: false,
 		},
 	];
+}
+
+export function createNewTable(
+	position: { x: number; y: number },
+	reactFlow: ReactFlowInstance,
+) {
+	const id = getNewId();
+	const newNode: Node<Table> = {
+		id: id.toString(),
+		type: "table",
+		position,
+		data: {
+			id: id,
+			name: "new_table",
+			position,
+			columns: getDefaultColumns(),
+			constraints: [],
+		},
+	};
+	reactFlow.addNodes([newNode]);
+	return newNode;
+}
+
+export function createOneToManyRelationship(
+	sourceNode: Node<Table>,
+	targetNode: Node<Table>,
+	reactFlow: ReactFlowInstance,
+) {
+	const targetPrimaryKeys = targetNode.data.columns.filter(
+		(column: any) => column.is_primary_key,
+	);
+
+	const newConstraint: Constraint = {
+		id: getNewId(),
+		type: ConstraintTypeEnum.FOREIGN_KEY,
+		relationships: [],
+		target_table_id: parseInt(targetNode.id),
+	};
+
+	for (const primaryKey of targetPrimaryKeys) {
+		const newColumn: Column = {
+			id: getNewId(),
+			name: targetNode.data.name + "_" + primaryKey.name,
+			type: primaryKey.type,
+			is_primary_key: false,
+			is_not_null: true,
+			is_unique: false,
+			is_auto_increment: false,
+		};
+		sourceNode.data.columns.push(newColumn);
+
+		const newRelationship: ConstraintRelationship = {
+			id: getNewId(),
+			own_column_id: newColumn.id,
+			target_column_id: primaryKey.id,
+		};
+
+		newConstraint.relationships.push(newRelationship);
+		const newEdge: Edge = {
+			id: newRelationship.id.toString(),
+			source: sourceNode.id.toString(),
+			sourceHandle: newColumn.id + "_source",
+			target: targetNode.id.toString(),
+			targetHandle: primaryKey.id + "_target",
+			type: "floating",
+		};
+
+		reactFlow.addEdges([newEdge]);
+	}
+
+	sourceNode.data.constraints = [
+		...sourceNode.data.constraints,
+		newConstraint,
+	];
+	reactFlow.updateNode(sourceNode.id, { data: sourceNode.data });
+}
+
+export function createManyToManyRelationship(
+	sourceNode: Node<Table>,
+	targetNode: Node<Table>,
+	reactFlow: ReactFlowInstance,
+) {
+	const middlePosition = {
+		x: (sourceNode.position.x + targetNode.position.x) / 2,
+		y: (sourceNode.position.y + targetNode.position.y) / 2,
+	};
+
+	const intermediateId = getNewId();
+	const newIntermediateTable: Node<Table> = {
+		id: intermediateId.toString(),
+		type: "table",
+		position: middlePosition,
+		origin: [0.5, 0.0],
+		data: {
+			id: intermediateId,
+			name: sourceNode.data.name + "_" + targetNode.data.name,
+			position: middlePosition,
+			columns: [],
+			constraints: [],
+		},
+	};
+	reactFlow.addNodes([newIntermediateTable]);
+
+	// add the constraints of the source node
+	const sourceConstraint: Constraint = {
+		id: getNewId(),
+		relationships: [],
+		target_table_id: parseInt(sourceNode.id),
+		type: ConstraintTypeEnum.FOREIGN_KEY,
+	};
+
+	const sourcePrimaryKeys: Column[] = sourceNode.data.columns.filter(
+		(column: any) => column.is_primary_key,
+	);
+	for (const primaryKey of sourcePrimaryKeys) {
+		const newColumn: Column = {
+			id: getNewId(),
+			name: sourceNode.data.name + "_" + primaryKey.name,
+			type: primaryKey.type,
+			is_primary_key: true,
+			is_not_null: false,
+			is_unique: false,
+			is_auto_increment: false,
+		};
+		newIntermediateTable.data.columns.push(newColumn);
+
+		const newRelationship: ConstraintRelationship = {
+			id: getNewId(),
+			own_column_id: newColumn.id,
+			target_column_id: primaryKey.id,
+		};
+		sourceConstraint.relationships.push(newRelationship);
+
+		const newEdge: Edge = {
+			id: newRelationship.id.toString(),
+			source: newIntermediateTable.id.toString(),
+			sourceHandle: newColumn.id + "_source",
+			target: sourceNode.id.toString(),
+			targetHandle: primaryKey.id + "_target",
+			type: "floating",
+		};
+
+		reactFlow.addEdges([newEdge]);
+	}
+
+	newIntermediateTable.data.constraints = [
+		...newIntermediateTable.data.constraints,
+		sourceConstraint,
+	];
+	reactFlow.updateNode(newIntermediateTable.id, {
+		data: newIntermediateTable.data,
+	});
+
+	// add the constraints of the target node
+	const targetConstraint: Constraint = {
+		id: getNewId(),
+		relationships: [],
+		target_table_id: parseInt(targetNode.id),
+		type: ConstraintTypeEnum.FOREIGN_KEY,
+	};
+
+	const targetPrimaryKeys: Column[] = targetNode.data.columns.filter(
+		(column: any) => column.is_primary_key,
+	);
+	for (const primaryKey of targetPrimaryKeys) {
+		const newColumn: Column = {
+			id: getNewId(),
+			name: targetNode.data.name + "_" + primaryKey.name,
+			type: primaryKey.type,
+			is_primary_key: true,
+			is_not_null: false,
+			is_unique: false,
+			is_auto_increment: false,
+		};
+		newIntermediateTable.data.columns.push(newColumn);
+
+		const newRelationship: ConstraintRelationship = {
+			id: getNewId(),
+			own_column_id: newColumn.id,
+			target_column_id: primaryKey.id,
+		};
+		targetConstraint.relationships.push(newRelationship);
+
+		const newEdge: Edge = {
+			id: newRelationship.id.toString(),
+			source: newIntermediateTable.id.toString(),
+			sourceHandle: newColumn.id + "_source",
+			target: targetNode.id.toString(),
+			targetHandle: primaryKey.id + "_target",
+			type: "floating",
+		};
+
+		reactFlow.addEdges([newEdge]);
+	}
+
+	newIntermediateTable.data.constraints = [
+		...newIntermediateTable.data.constraints,
+		targetConstraint,
+	];
+	reactFlow.updateNode(newIntermediateTable.id, {
+		data: newIntermediateTable.data,
+	});
 }
 
 export function removeColumn(
@@ -116,22 +324,26 @@ export function moveColumn(
 	reacflow.updateNode(originTable.id, { data: originTable });
 }
 
-export function removeTable(tableId: string, reactflow: ReactFlowInstance) {
-	const tableNode: any = reactflow.getNode(tableId);
+export function removeTable(tableId: number, reactflow: ReactFlowInstance) {
+	const tableNode: Node | undefined = reactflow.getNode(tableId.toString());
+	if (!tableNode) {
+		return;
+	}
+
 	reactflow.deleteElements({
 		nodes: [tableNode],
 	});
 
 	// for each table, remove the constraint that references the table
 	for (const nodeTable of reactflow.getNodes()) {
-		const table: any = nodeTable.data;
+		const table: Table = nodeTable.data as Table;
 		for (const constraint of table.constraints) {
 			if (constraint.target_table_id === tableId) {
 				table.constraints = table.constraints.filter((c: any) => {
 					return c.target_table_id !== tableId;
 				});
 			}
-			reactflow.updateNode(table.id, { data: table });
+			reactflow.updateNode(table.id.toString(), { data: table });
 		}
 	}
 }

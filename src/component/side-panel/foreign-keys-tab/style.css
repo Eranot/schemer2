@@ -13,7 +13,17 @@ button {
 	position: relative;
 }
 
-.ColumnsTitleContainer {
+.ForeignKeysTitleContainer {
+	display: flex;
+	flex-direction: row;
+	gap: 8px;
+	align-items: center;
+	font-size: 22px;
+	margin-top: 16px;
+	color: #afceff;
+}
+
+.RelationshipsTitleContainer {
 	display: flex;
 	flex-direction: row;
 	gap: 8px;
@@ -33,6 +43,7 @@ button {
 	border: 2px solid #333b57;
 	border-radius: 4px;
 	padding: 8px 12px;
+	margin-top: 8px;
 }
 
 .RelationshipContainer {
