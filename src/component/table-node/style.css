@@ -3,6 +3,14 @@
 	background-color: #eeeeee;
 }
 
+.table-container[data-tool-selected="true"] {
+	border: 3px solid #4caf50;
+	background-color: #4caf50;
+	border-radius: 4px;
+	box-sizing: border-box;
+	margin: -3px;
+}
+
 .table-header {
 	background-color: #5370a2;
 	color: white;

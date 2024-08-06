@@ -2,6 +2,7 @@ import { Handle, Position, useUpdateNodeInternals } from "@xyflow/react";
 import { useMemo } from "react";
 import columnDiamondEmpty from "../../assets/column_diamond_empty.png";
 import columnDiamondFull from "../../assets/column_diamond_full.png";
+import { useEditor } from "../../context/editor-context";
 import "./style.css";
 
 const handleStyle = {
@@ -12,6 +13,7 @@ const handleStyle = {
 
 function TableNode({ id, data }: any) {
 	const updateNodeInternals = useUpdateNodeInternals();
+	const { toolSelectedNodeTable } = useEditor();
 
 	const columns = useMemo(() => {
 		updateNodeInternals(id);
@@ -19,7 +21,10 @@ function TableNode({ id, data }: any) {
 	}, [data.columns]);
 
 	return (
-		<div className="table-container">
+		<div
+			className="table-container"
+			data-tool-selected={toolSelectedNodeTable?.id === id}
+		>
 			<div className="table-header">
 				<div className="table-name">{data.name}</div>
 			</div>

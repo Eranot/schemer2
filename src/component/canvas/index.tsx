@@ -29,9 +29,14 @@ export default function Canvas() {
 	const reactFlow = useReactFlow();
 	const { currentTool, setCurrentTool } = useToolbar();
 	const { setSelectedTable } = useTable();
-	const { nodes, setNodes, edges, setEdges } = useEditor();
-
-	const [toolSelectedNodeTable, setToolSelectedNodeTable] = useState(null);
+	const {
+		nodes,
+		setNodes,
+		edges,
+		setEdges,
+		toolSelectedNodeTable,
+		setToolSelectedNodeTable,
+	} = useEditor();
 
 	const nodeTypes = { table: TableNode };
 	const edgeTypes = {
@@ -125,6 +130,7 @@ export default function Canvas() {
 				zoomOnDoubleClick={false}
 				onPaneContextMenu={(event) => {
 					setSelectedTable(null);
+					setToolSelectedNodeTable(null);
 					event.preventDefault();
 				}}
 				onNodeContextMenu={(event) => {
