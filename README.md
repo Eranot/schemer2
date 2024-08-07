@@ -12,11 +12,11 @@ You can use the editor online at [https://editor.schemer.gg](https://editor.sche
 
 -   Create tables and relationships
 -   Export/import in a custom JSON format that is readable and can be version controlled
+-   Use offline as a PWA
 
 ## Future features
 
--   Use offline as a PWA
--   Undo support
+-   Undo/Redo support
 -   Export as PNG
 -   Customizable naming conventions for relationhip columns
 
