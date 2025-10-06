@@ -4,6 +4,7 @@ import Table from "../type/table";
 import Column from "../type/column";
 import ConstraintTypeEnum from "../enum/constraint-type-enum";
 import ConstraintRelationship from "../type/constraint-relationship";
+import FkNamingEnum from "../enum/fk-naming-enum";
 
 export function getNewId(): number {
 	return Math.floor(Math.random() * 9000000000 + 1000000000);
@@ -15,7 +16,7 @@ export function getDefaultColumns(): Column[] {
 			id: getNewId(),
 			name: "id",
 			type: "int",
-			is_auto_increment: false,
+			is_auto_increment: true,
 			is_primary_key: true,
 			is_not_null: false,
 			is_unique: false,
@@ -63,7 +64,7 @@ export function createOneToManyRelationship(
 	for (const primaryKey of targetPrimaryKeys) {
 		const newColumn: Column = {
 			id: getNewId(),
-			name: targetNode.data.name + "_" + primaryKey.name,
+			name: getFkName(targetNode.data.name, primaryKey.name),
 			type: primaryKey.type,
 			is_primary_key: false,
 			is_not_null: true,
@@ -138,7 +139,7 @@ export function createManyToManyRelationship(
 	for (const primaryKey of sourcePrimaryKeys) {
 		const newColumn: Column = {
 			id: getNewId(),
-			name: sourceNode.data.name + "_" + primaryKey.name,
+			name: getFkName(sourceNode.data.name, primaryKey.name),
 			type: primaryKey.type,
 			is_primary_key: true,
 			is_not_null: false,
@@ -188,7 +189,7 @@ export function createManyToManyRelationship(
 	for (const primaryKey of targetPrimaryKeys) {
 		const newColumn: Column = {
 			id: getNewId(),
-			name: targetNode.data.name + "_" + primaryKey.name,
+			name: getFkName(targetNode.data.name, primaryKey.name),
 			type: primaryKey.type,
 			is_primary_key: true,
 			is_not_null: false,
@@ -346,4 +347,15 @@ export function removeTable(tableId: number, reactflow: ReactFlowInstance) {
 			reactflow.updateNode(table.id.toString(), { data: table });
 		}
 	}
+}
+
+function getFkName(targetTableName: string, targetPkName: string): string {
+	const fkFormat =
+		localStorage.getItem("fkNamingFormat") || FkNamingEnum.TABLE_PK;
+
+	if (fkFormat === FkNamingEnum.PK_TABLE) {
+		return `${targetPkName}_${targetTableName}`;
+	}
+
+	return `${targetTableName}_${targetPkName}`;
 }
