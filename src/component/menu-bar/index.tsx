@@ -66,7 +66,7 @@ export default function MenuBar() {
 		const blob = new Blob([json], {
 			type: "application/json",
 		});
-		saveAs(blob, originalFileName || "er.schemer");
+		saveAs(blob, originalFileName || "er.schemer.json");
 	}, [reactFlow, originalFileName]);
 
 	useEffect(() => {
